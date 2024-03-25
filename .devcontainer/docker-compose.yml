@@ -8,10 +8,22 @@ services:
       - .:/var/www/html
     depends_on:
       - db
+    networks:
+      - framework-network
   db:
-    image: mysql:5.7
+    image: 'mysql:8.0'
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: framework
       MYSQL_USER: root
       MYSQL_PASSWORD: root
+      networks:
+        - framework-network
+
+networks:
+  framework-network:
+    name: framework-network
+    driver: bridge
