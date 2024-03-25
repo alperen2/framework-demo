@@ -1,25 +1,17 @@
-FROM php:8.2-apache
+# Use Alpine Linux as base image
+FROM alpine:latest
 
-# Install MySQL Server in a Non-Interactive mode. Default root password will be "root"
-RUN echo "mysql-server mysql-server/root_password password root" | debconf-set-selections
-RUN echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections
-RUN apt-get update && apt-get install -y mysql-server
+# Install PHP and MySQL
+RUN apk add --no-cache php php-mysqli mysql mysql-client
 
-# Install mysqli extension
-RUN docker-php-ext-install mysqli
-RUN docker-php-ext-enable mysqli
+# Set up MySQL in a Non-Interactive mode with default root password as 'root'
+RUN /etc/init.d/mysql setup
+RUN service mysql start && \
+    mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');" && \
+    mysql -u root -e "FLUSH PRIVILEGES;"
 
-# Install other utilities
-RUN apt-get update && apt-get install -y \
-    git \
-    zip \
-    unzip
+# Expose port 80 for web access
+EXPOSE 80
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
-# Start MySQL service
-RUN service mysql start
+# Start MySQL and PHP services
+CMD ["sh", "-c", "service mysql start; php-fpm;"]
