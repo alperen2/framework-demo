@@ -1,0 +1,16 @@
+{
+	"name": "PHP 8.2 & MySQL",
+	"dockerFile": "Dockerfile",
+	"forwardPorts": [3306],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bmewburn.vscode-intelephense"
+			],
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/bash"
+			}
+		}
+	}
+  }
+  
